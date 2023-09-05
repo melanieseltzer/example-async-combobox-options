@@ -22,7 +22,9 @@ export function ComboboxDemo() {
 
   const handleSetActive = React.useCallback((product: Product) => {
     setSelected(product);
-    setOpen(false);
+
+    // OPTIONAL: close the combobox upon selection
+    // setOpen(false);
   }, []);
 
   const displayName = selected ? selected.title : 'Select product';
@@ -42,7 +44,7 @@ export function ComboboxDemo() {
       </PopoverTrigger>
 
       <PopoverContent side="bottom" className={cn('p-0', POPOVER_WIDTH)}>
-        <Search onSelectResult={handleSetActive} />
+        <Search selectedResult={selected} onSelectResult={handleSetActive} />
       </PopoverContent>
     </Popover>
   );

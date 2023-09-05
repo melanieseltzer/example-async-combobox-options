@@ -10,17 +10,22 @@ import {
 } from '@/components/ui/command';
 import type { Product, SearchResponse } from '@/types';
 import { searchProductsByName } from '@/api';
+import { Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface SearchProps {
+  selectedResult?: Product;
   onSelectResult: (product: Product) => void;
 }
 
-export function Search({ onSelectResult }: SearchProps) {
+export function Search({ selectedResult, onSelectResult }: SearchProps) {
   const [searchQuery, setSearchQuery] = React.useState('');
 
   const handleSelectResult = (product: Product) => {
-    setSearchQuery('');
     onSelectResult(product);
+
+    // OPTIONAL: reset the search query upon selection
+    // setSearchQuery('');
   };
 
   return (
@@ -34,17 +39,26 @@ export function Search({ onSelectResult }: SearchProps) {
         placeholder="Search for product"
       />
 
-      <SearchResults query={searchQuery} onSelectResult={handleSelectResult} />
+      <SearchResults
+        query={searchQuery}
+        selectedResult={selectedResult}
+        onSelectResult={handleSelectResult}
+      />
     </Command>
   );
 }
 
 interface SearchResultsProps {
   query: string;
+  selectedResult: SearchProps['selectedResult'];
   onSelectResult: SearchProps['onSelectResult'];
 }
 
-function SearchResults({ query, onSelectResult }: SearchResultsProps) {
+function SearchResults({
+  query,
+  selectedResult,
+  onSelectResult,
+}: SearchResultsProps) {
   const [debouncedSearchQuery] = useDebounce(query, 500);
 
   const enabled = !!debouncedSearchQuery;
@@ -67,7 +81,7 @@ function SearchResults({ query, onSelectResult }: SearchResultsProps) {
     <CommandList>
       {isLoading && <div className="p-4 text-sm">Searching...</div>}
 
-      {/* TODO: proper loading aria */}
+      {/* TODO: this should have proper loading aria */}
       {!isError && !isLoading && !data?.products.length && (
         <div className="p-4 text-sm">No products found</div>
       )}
@@ -83,6 +97,12 @@ function SearchResults({ query, onSelectResult }: SearchResultsProps) {
             onSelect={() => onSelectResult({ id, title })}
             value={title}
           >
+            <Check
+              className={cn(
+                'mr-2 h-4 w-4',
+                selectedResult?.id === id ? 'opacity-100' : 'opacity-0'
+              )}
+            />
             {title}
           </CommandItem>
         );
