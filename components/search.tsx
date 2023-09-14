@@ -73,24 +73,21 @@ function SearchResults({
     enabled,
   });
 
+  // To get around this https://github.com/TanStack/query/issues/3584
   const isLoading = enabled && isLoadingOrig;
 
   if (!enabled) return null;
 
   return (
     <CommandList>
+      {/* TODO: these should have proper loading aria */}
       {isLoading && <div className="p-4 text-sm">Searching...</div>}
-
-      {/* TODO: this should have proper loading aria */}
       {!isError && !isLoading && !data?.products.length && (
         <div className="p-4 text-sm">No products found</div>
       )}
-
       {isError && <div className="p-4 text-sm">Something went wrong</div>}
 
-      {data?.products.map((user) => {
-        const { id, title } = user;
-
+      {data?.products.map(({ id, title }) => {
         return (
           <CommandItem
             key={id}
